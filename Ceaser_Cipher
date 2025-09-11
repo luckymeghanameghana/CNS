@@ -1,0 +1,30 @@
+public class C {
+
+    public static String encrypt(String t, int s) {
+        StringBuilder r = new StringBuilder();
+        for (char ch : t.toCharArray()) {
+            if (Character.isLetter(ch)) {
+                char base = Character.isUpperCase(ch) ? 'A' : 'a';
+                ch = (char) (((ch - base + s) % 26) + base);
+            }
+            r.append(ch);
+        }
+        return r.toString();
+    }
+
+    public static String decrypt(String t, int s) {
+        return encrypt(t, -s);
+    }
+
+    public static void main(String[] args) {
+        String t = "HELLO";
+        int s = 3;
+
+        String e = encrypt(t, s);
+        String d = decrypt(e, s);
+
+        System.out.println("Original: \"" + t + "\"");
+        System.out.println("Encrypted: \"" + e + "\"");
+        System.out.println("Decrypted: \"" + d + "\"");
+    }
+}
