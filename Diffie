@@ -1,0 +1,33 @@
+import java.security.*;
+import java.util.Base64;
+import javax.crypto.KeyAgreement;
+import javax.crypto.interfaces.DHPublicKey;
+
+public class Diffie {
+    public static void main(String[] args) throws Exception {
+        KeyPairGenerator kpg = KeyPairGenerator.getInstance("DH");
+        kpg.initialize(2048);
+        KeyPair a = kpg.generateKeyPair();
+        System.out.println("Alice Public: " +
+            Base64.getEncoder().encodeToString(a.getPublic().getEncoded()));
+
+        DHPublicKey pubA = (DHPublicKey) a.getPublic();
+        kpg.initialize(pubA.getParams());
+        KeyPair b = kpg.generateKeyPair();
+        System.out.println("Bob Public: " +
+            Base64.getEncoder().encodeToString(b.getPublic().getEncoded()));
+
+        KeyAgreement kaA = KeyAgreement.getInstance("DH");
+        kaA.init(a.getPrivate());
+        kaA.doPhase(b.getPublic(), true);
+        byte[] secretA = kaA.generateSecret();
+
+        KeyAgreement kaB = KeyAgreement.getInstance("DH");
+        kaB.init(b.getPrivate());
+        kaB.doPhase(a.getPublic(), true);
+        byte[] secretB = kaB.generateSecret();
+
+        System.out.println("Shared Secret: " + Base64.getEncoder().encodeToString(secretA));
+        System.out.println("Secrets match: " + MessageDigest.isEqual(secretA, secretB));
+    }
+}
